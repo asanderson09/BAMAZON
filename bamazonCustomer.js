@@ -31,7 +31,7 @@ const askCustomer = function (res) {
     inquirer.prompt([{
         type: 'input',
         name: 'choice',
-        message: 'Type the item you would like to purchase'
+        message: 'Type the item name you would like to purchase'
     }]).then(function (answer) {
          correct = false;
         for (i = 0; i < res.length; i++) {
@@ -52,9 +52,12 @@ const askCustomer = function (res) {
                     }
                 }).then(function (answer) {
                     if ((res[id].stock_quantity - answer.quantity) > 0) {
-                        connection.query(`UPDATE products SET stock_quantity =` + (res[id].stock_quantity - answer.quantity) + ` WHERE product_name=` + product, function (err, res) {
+                        let newStock = (res[id].stock_quantity - answer.quantity);
+                        connection.query(`UPDATE products SET stock_quantity="${newStock}" WHERE product_name="${product}"`, function (err, res) {
+                           if (err) throw err;
                             console.log(`
                             ~~~ Purchase Complete ~~~
+                            You have purchased ${answer.quantity} units, of Item ${product}
                             `);
                             showTable();
                         })
